@@ -231,6 +231,12 @@ def get_suggestions():
 
 app = Flask(__name__)
 
+
+@app.route("/ping")
+def ping():
+    return "pong"
+
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -333,8 +339,8 @@ def recommend():
     else:
         print("Failed to retrieve reviews")
 
-if __name__ == '__main__':
-    #app.run(debug=True)
-    import os
-    port = int(os.environ.get('PORT', 5050))
-    app.run(host='0.0.0.0', port=port)
+# if __name__ == '__main__':
+#     #app.run(debug=True)
+#     import os
+#     port = int(os.environ.get('PORT', 5050))
+#     app.run(host='0.0.0.0', port=port)
