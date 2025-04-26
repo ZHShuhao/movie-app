@@ -286,6 +286,7 @@ def recommend():
         headers = {'User-Agent': 'Mozilla/5.0'}
 
         response = requests.get(url, headers=headers)
+        print("IMDB response status:", response.status_code)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'lxml')
             soup_result = soup.find_all("div", {"class": "ipc-html-content-inner-div"})
@@ -318,11 +319,15 @@ def recommend():
             print("Failed to retrieve reviews")
             return "error recs!!"
     except Exception as e:
-        return str(e)
-        # print(f"Exception in /recommend: {e}")
-        # return "error recs"
+        import traceback
+        print("=== Exception in /recommend ===")
+        traceback.print_exc()
+        return f"error recs: {str(e)}"
+        # return str(e)
+        # # print(f"Exception in /recommend: {e}")
+        # # return "error recs"
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5050))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
 
