@@ -175,7 +175,9 @@ import pickle
 import requests
 import os
 
+
 print("✅ Flask app is loading...")
+app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -231,7 +233,6 @@ def get_suggestions():
     data = pd.read_csv('main_data.csv')
     return list(data['movie_title'].str.capitalize())
 
-app = Flask(__name__)
 
 
 @app.route("/ping")
