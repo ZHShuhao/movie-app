@@ -175,6 +175,8 @@ import pickle
 import requests
 import os
 
+print("✅ Flask app is loading...")
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # load the nlp model and tfidf vectorizer from disk
