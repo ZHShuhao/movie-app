@@ -238,73 +238,110 @@ def similarity():
         return "---".join(rc)
 
 @app.route("/recommend", methods=["POST"])
+@app.route("/recommend", methods=["POST"])
 def recommend():
     try:
-        print("=== /recommend endpoint triggered ===")
+        print("✅ /recommend endpoint hit (safe mode)")
 
-        title = request.form['title']
-        cast_ids = request.form['cast_ids']
-        cast_names = request.form['cast_names']
-        cast_chars = request.form['cast_chars']
-        cast_bdays = request.form['cast_bdays']
-        cast_bios = request.form['cast_bios']
-        cast_places = request.form['cast_places']
-        cast_profiles = request.form['cast_profiles']
-        imdb_id = request.form['imdb_id']
-        poster = request.form['poster']
-        genres = request.form['genres']
-        overview = request.form['overview']
-        vote_average = request.form['rating']
-        vote_count = request.form['vote_count']
-        release_date = request.form['release_date']
-        runtime = request.form['runtime']
-        status = request.form['status']
-        rec_movies = request.form['rec_movies']
-        rec_posters = request.form['rec_posters']
+        # 假数据返回，只保证页面能打开
+        movie_reviews = {
+            "Great visual effects and strong acting performances.": "Good",
+            "Weak storyline, but entertaining.": "Bad"
+        }
 
-        suggestions = get_suggestions()
-
-        rec_movies = convert_to_list(rec_movies)
-        rec_posters = convert_to_list(rec_posters)
-        cast_names = convert_to_list(cast_names)
-        cast_chars = convert_to_list(cast_chars)
-        cast_profiles = convert_to_list(cast_profiles)
-        cast_bdays = convert_to_list(cast_bdays)
-        cast_bios = convert_to_list(cast_bios)
-        cast_places = convert_to_list(cast_places)
-
-        cast_ids = cast_ids.split(',')
-        cast_ids[0] = cast_ids[0].replace("[","")
-        cast_ids[-1] = cast_ids[-1].replace("]","")
-
-        for i in range(len(cast_bios)):
-            cast_bios[i] = cast_bios[i].replace(r'\n', '\n').replace(r'\"','\"')
-
-        movie_cards = {rec_posters[i]: rec_movies[i] for i in range(len(rec_posters))}
-        casts = {cast_names[i]: [cast_ids[i], cast_chars[i], cast_profiles[i]] for i in range(len(cast_profiles))}
-        cast_details = {cast_names[i]: [cast_ids[i], cast_profiles[i], cast_bdays[i], cast_places[i], cast_bios[i]] for i in range(len(cast_places))}
-
-        print("⚠️ Using fallback reviews (fake data) for testing")
-
-        reviews_list = [
-            "One of the most thrilling movies I've seen this year!",
-            "Some parts dragged on, but the action was great.",
-            "Could watch it again just for the soundtrack!"
-        ]
-        reviews_status = ["Good", "Good", "Good"]
-
-        movie_reviews = {reviews_list[i]: reviews_status[i] for i in range(len(reviews_list))}
-
-        return render_template('recommend.html', title=title, poster=poster, overview=overview, vote_average=vote_average,
-                               vote_count=vote_count, release_date=release_date, runtime=runtime, status=status,
-                               genres=genres, movie_cards=movie_cards, reviews=movie_reviews,
-                               casts=casts, cast_details=cast_details)
+        return render_template(
+            'recommend.html',
+            title="Fake Movie",
+            poster="/static/image.jpg",  # 确保这个图在 static 中有
+            overview="This is a sample overview of the movie.",
+            vote_average="7.5",
+            vote_count="1250",
+            release_date="2025-01-01",
+            runtime="120",
+            status="Released",
+            genres="Action, Drama",
+            movie_cards={
+                "/static/loader.gif": "Sample Recommendation",
+                "/static/krish-naik.PNG": "Another Movie"
+            },
+            reviews=movie_reviews,
+            casts={},
+            cast_details={}
+        )
 
     except Exception as e:
         import traceback
-        print("=== Exception in /recommend ===")
+        print("❌ Exception in simplified /recommend:")
         traceback.print_exc()
         return f"error recs: {str(e)}"
+
+# def recommend():
+#     try:
+#         print("=== /recommend endpoint triggered ===")
+
+#         title = request.form['title']
+#         cast_ids = request.form['cast_ids']
+#         cast_names = request.form['cast_names']
+#         cast_chars = request.form['cast_chars']
+#         cast_bdays = request.form['cast_bdays']
+#         cast_bios = request.form['cast_bios']
+#         cast_places = request.form['cast_places']
+#         cast_profiles = request.form['cast_profiles']
+#         imdb_id = request.form['imdb_id']
+#         poster = request.form['poster']
+#         genres = request.form['genres']
+#         overview = request.form['overview']
+#         vote_average = request.form['rating']
+#         vote_count = request.form['vote_count']
+#         release_date = request.form['release_date']
+#         runtime = request.form['runtime']
+#         status = request.form['status']
+#         rec_movies = request.form['rec_movies']
+#         rec_posters = request.form['rec_posters']
+
+#         suggestions = get_suggestions()
+
+#         rec_movies = convert_to_list(rec_movies)
+#         rec_posters = convert_to_list(rec_posters)
+#         cast_names = convert_to_list(cast_names)
+#         cast_chars = convert_to_list(cast_chars)
+#         cast_profiles = convert_to_list(cast_profiles)
+#         cast_bdays = convert_to_list(cast_bdays)
+#         cast_bios = convert_to_list(cast_bios)
+#         cast_places = convert_to_list(cast_places)
+
+#         cast_ids = cast_ids.split(',')
+#         cast_ids[0] = cast_ids[0].replace("[","")
+#         cast_ids[-1] = cast_ids[-1].replace("]","")
+
+#         for i in range(len(cast_bios)):
+#             cast_bios[i] = cast_bios[i].replace(r'\n', '\n').replace(r'\"','\"')
+
+#         movie_cards = {rec_posters[i]: rec_movies[i] for i in range(len(rec_posters))}
+#         casts = {cast_names[i]: [cast_ids[i], cast_chars[i], cast_profiles[i]] for i in range(len(cast_profiles))}
+#         cast_details = {cast_names[i]: [cast_ids[i], cast_profiles[i], cast_bdays[i], cast_places[i], cast_bios[i]] for i in range(len(cast_places))}
+
+#         print("⚠️ Using fallback reviews (fake data) for testing")
+
+#         reviews_list = [
+#             "One of the most thrilling movies I've seen this year!",
+#             "Some parts dragged on, but the action was great.",
+#             "Could watch it again just for the soundtrack!"
+#         ]
+#         reviews_status = ["Good", "Good", "Good"]
+
+#         movie_reviews = {reviews_list[i]: reviews_status[i] for i in range(len(reviews_list))}
+
+#         return render_template('recommend.html', title=title, poster=poster, overview=overview, vote_average=vote_average,
+#                                vote_count=vote_count, release_date=release_date, runtime=runtime, status=status,
+#                                genres=genres, movie_cards=movie_cards, reviews=movie_reviews,
+#                                casts=casts, cast_details=cast_details)
+
+#     except Exception as e:
+#         import traceback
+#         print("=== Exception in /recommend ===")
+#         traceback.print_exc()
+#         return f"error recs: {str(e)}"
 
 
 if __name__ == '__main__':
