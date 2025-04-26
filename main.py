@@ -189,12 +189,31 @@ vectorizer = pickle.load(open(vectorizer_path, 'rb'))
 # Flask app init
 app = Flask(__name__)
 
+
 def create_similarity():
     data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
-    cv = CountVectorizer()
-    count_matrix = cv.fit_transform(data['comb'])
-    similarity = cosine_similarity(count_matrix)
-    return data, similarity
+    print("🧪 Loaded data columns:", data.columns.tolist())
+    print("🧪 Sample comb data:", data['comb'].head(1).values)
+
+    # 确保 comb 列没有 NaN
+    data['comb'] = data['comb'].fillna('')
+
+    try:
+        cv = CountVectorizer()
+        count_matrix = cv.fit_transform(data['comb'])
+        similarity = cosine_similarity(count_matrix)
+        return data, similarity
+    except Exception as e:
+        print("❌ Error in CountVectorizer:", e)
+        raise
+
+
+# def create_similarity():
+#     data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
+#     cv = CountVectorizer()
+#     count_matrix = cv.fit_transform(data['comb'])
+#     similarity = cosine_similarity(count_matrix)
+#     return data, similarity
 
 def rcmd(m):
     m = m.lower()
