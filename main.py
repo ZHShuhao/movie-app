@@ -209,7 +209,7 @@ def create_similarity():
     global data, similarity
     if data is None or similarity is None:
         print("🔄 Creating similarity matrix...")
-        data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv')).head(10)
+        data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv')).head(100)
         cv = CountVectorizer()
         count_matrix = cv.fit_transform(data['comb'])
         similarity = cosine_similarity(count_matrix)
@@ -239,16 +239,43 @@ def create_similarity():
 #             l.append(data['movie_title'][a])
 #         return l
 
+# def rcmd(m):
+#     data, similarity = create_similarity()
+#     m = m.lower()
+#     if m not in data['movie_title'].str.lower().values:
+#         return 'Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies'
+#     else:
+#         i = data[data['movie_title'].str.lower() == m].index[0]
+#         lst = list(enumerate(similarity[i]))
+#         lst = sorted(lst, key=lambda x: x[1], reverse=True)[1:11]
+#         return [data['movie_title'][x[0]] for x in lst]
+
+
+from difflib import get_close_matches
+
 def rcmd(m):
-    data, similarity = create_similarity()
-    m = m.lower()
-    if m not in data['movie_title'].str.lower().values:
-        return 'Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies'
-    else:
-        i = data[data['movie_title'].str.lower() == m].index[0]
+    try:
+        data, similarity = create_similarity()
+        m = m.lower().strip()
+        titles = data['movie_title'].str.lower().str.strip()
+
+        matches = get_close_matches(m, titles, n=1, cutoff=0.6)
+
+        if not matches:
+            return 'Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies'
+
+        matched_title = matches[0]
+        i = titles[titles == matched_title].index[0]
+
         lst = list(enumerate(similarity[i]))
         lst = sorted(lst, key=lambda x: x[1], reverse=True)[1:11]
         return [data['movie_title'][x[0]] for x in lst]
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return 'Sorry! Something went wrong on the server.'
+
 
     
 # converting list of string to list (eg. "["abc","def"]" to ["abc","def"])
@@ -291,14 +318,27 @@ def home():
 
 @app.route("/similarity",methods=["POST"])
 
-def similarity():
-    movie = request.form['name']
-    rc = rcmd(movie)
-    if type(rc)==type('string'):
-        return rc
-    else:
-        m_str="---".join(rc)
-        return m_str
+# def similarity():
+#     movie = request.form['name']
+#     rc = rcmd(movie)
+#     if type(rc)==type('string'):
+#         return rc
+#     else:
+#         m_str="---".join(rc)
+#         return m_str
+
+def similarity_route():
+    try:
+        movie = request.form['name']
+        rc = rcmd(movie)
+        if isinstance(rc, str):
+            return rc
+        return "---".join(rc)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return "Server error occurred.", 500
+
 
 @app.route("/recommend",methods=["POST"])
 def recommend():
