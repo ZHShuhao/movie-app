@@ -179,6 +179,7 @@ import os
 print("✅ Flask app is loading...")
 app = Flask(__name__)
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # load the nlp model and tfidf vectorizer from disk
@@ -234,10 +235,23 @@ def get_suggestions():
     return list(data['movie_title'].str.capitalize())
 
 
+print("✅ Loading similarity matrix and movie data...")
+data, similarity = create_similarity()
+print("✅ Similarity matrix loaded.")
+
+
 
 @app.route("/ping")
 def ping():
     return "pong"
+
+@app.route("/status")
+def status():
+    return {
+        "status": "running",
+        "movies_loaded": len(data),
+        "similarity_shape": similarity.shape
+    }
 
 
 @app.route("/")
