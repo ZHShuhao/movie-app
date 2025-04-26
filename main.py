@@ -185,6 +185,7 @@ clf = pickle.load(open(os.path.join(BASE_DIR, 'nlp_model.pkl'), 'rb'))
 #vectorizer = pickle.load(open('tranform.pkl','rb'))
 vectorizer = pickle.load(open(os.path.join(BASE_DIR, 'tranform.pkl'), 'rb'))
 
+
 def create_similarity():
     #data = pd.read_csv('main_data.csv')
     data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
@@ -194,6 +195,16 @@ def create_similarity():
     # creating a similarity score matrix
     similarity = cosine_similarity(count_matrix)
     return data,similarity
+
+
+data, similarity = None, None
+
+try:
+    data, similarity = create_similarity()
+    print("✅ Successfully loaded similarity matrix")
+except Exception as e:
+    print(f"❌ Failed to load similarity matrix: {e}")
+
 
 def rcmd(m):
     m = m.lower()
@@ -234,7 +245,22 @@ def home():
     suggestions = get_suggestions()
     return render_template('home.html',suggestions=suggestions)
 
+
 @app.route("/similarity",methods=["POST"])
+# def similarity():
+#     try:
+#         movie = request.form['name']
+#         print(f"🎬 Received movie title: {movie}")
+#         rc = rcmd(movie)
+#         print(f"✅ Recommended list: {rc}")
+#         if isinstance(rc, str):
+#             return rc
+#         else:
+#             return "---".join(rc)
+#     except Exception as e:
+#         print(f"❌ Error in /similarity: {e}")
+#         return "Internal Server Error", 500
+
 def similarity():
     movie = request.form['name']
     rc = rcmd(movie)
