@@ -191,37 +191,65 @@ clf = pickle.load(open(os.path.join(BASE_DIR, 'nlp_model.pkl'), 'rb'))
 vectorizer = pickle.load(open(os.path.join(BASE_DIR, 'tranform.pkl'), 'rb'))
 
 
+# def create_similarity():
+#     #data = pd.read_csv('main_data.csv')
+#     data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
+#     # creating a count matrix
+#     cv = CountVectorizer()
+#     count_matrix = cv.fit_transform(data['comb'])
+#     # creating a similarity score matrix
+#     similarity = cosine_similarity(count_matrix)
+#     return data,similarity
+
+
+data = None
+similarity = None
+
 def create_similarity():
-    #data = pd.read_csv('main_data.csv')
-    data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
-    # creating a count matrix
-    cv = CountVectorizer()
-    count_matrix = cv.fit_transform(data['comb'])
-    # creating a similarity score matrix
-    similarity = cosine_similarity(count_matrix)
-    return data,similarity
+    global data, similarity
+    if data is None or similarity is None:
+        print("🔄 Creating similarity matrix...")
+        data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv'))
+        cv = CountVectorizer()
+        count_matrix = cv.fit_transform(data['comb'])
+        similarity = cosine_similarity(count_matrix)
+        print("✅ Similarity matrix ready.")
+    return data, similarity
 
 
+
+
+# def rcmd(m):
+#     m = m.lower()
+#     try:
+#         data.head()
+#         similarity.shape
+#     except:
+#         data, similarity = create_similarity()
+#     if m not in data['movie_title'].unique():
+#         return('Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies')
+#     else:
+#         i = data.loc[data['movie_title']==m].index[0]
+#         lst = list(enumerate(similarity[i]))
+#         lst = sorted(lst, key = lambda x:x[1] ,reverse=True)
+#         lst = lst[1:11] # excluding first item since it is the requested movie itself
+#         l = []
+#         for i in range(len(lst)):
+#             a = lst[i][0]
+#             l.append(data['movie_title'][a])
+#         return l
 
 def rcmd(m):
+    data, similarity = create_similarity()
     m = m.lower()
-    try:
-        data.head()
-        similarity.shape
-    except:
-        data, similarity = create_similarity()
-    if m not in data['movie_title'].unique():
-        return('Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies')
+    if m not in data['movie_title'].str.lower().values:
+        return 'Sorry! The movie you requested is not in our database. Please check the spelling or try with some other movies'
     else:
-        i = data.loc[data['movie_title']==m].index[0]
+        i = data[data['movie_title'].str.lower() == m].index[0]
         lst = list(enumerate(similarity[i]))
-        lst = sorted(lst, key = lambda x:x[1] ,reverse=True)
-        lst = lst[1:11] # excluding first item since it is the requested movie itself
-        l = []
-        for i in range(len(lst)):
-            a = lst[i][0]
-            l.append(data['movie_title'][a])
-        return l
+        lst = sorted(lst, key=lambda x: x[1], reverse=True)[1:11]
+        return [data['movie_title'][x[0]] for x in lst]
+
     
 # converting list of string to list (eg. "["abc","def"]" to ["abc","def"])
 def convert_to_list(my_list):
