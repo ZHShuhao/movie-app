@@ -292,10 +292,18 @@ def recommend():
 
             reviews_list = []
             reviews_status = []
+            # for reviews in soup_result:
+            #     if reviews.string:
+            #         reviews_list.append(reviews.string)
+            #         review_array = np.array([reviews.string])
+            #         movie_vector = vectorizer.transform(review_array)
+            #         pred = clf.predict(movie_vector)
+            #         reviews_status.append('Good' if pred else 'Bad')
             for reviews in soup_result:
-                if reviews.string:
-                    reviews_list.append(reviews.string)
-                    review_array = np.array([reviews.string])
+                text = reviews.get_text(strip=True)
+                if text:
+                    reviews_list.append(text)
+                    review_array = np.array([text])
                     movie_vector = vectorizer.transform(review_array)
                     pred = clf.predict(movie_vector)
                     reviews_status.append('Good' if pred else 'Bad')
