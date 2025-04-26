@@ -209,7 +209,7 @@ def create_similarity():
     global data, similarity
     if data is None or similarity is None:
         print("🔄 Creating similarity matrix...")
-        data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv')).head(100)
+        data = pd.read_csv(os.path.join(BASE_DIR, 'main_data.csv')).head(1000)
         cv = CountVectorizer()
         count_matrix = cv.fit_transform(data['comb'])
         similarity = cosine_similarity(count_matrix)
