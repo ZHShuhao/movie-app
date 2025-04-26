@@ -316,10 +316,11 @@ def recommend():
                                    casts=casts, cast_details=cast_details)
         else:
             print("Failed to retrieve reviews")
-            return "error recs"
+            return "error recs!!"
     except Exception as e:
-        print(f"Exception in /recommend: {e}")
-        return "error recs"
+        return str(e)
+        # print(f"Exception in /recommend: {e}")
+        # return "error recs"
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5050))
