@@ -197,14 +197,6 @@ def create_similarity():
     return data,similarity
 
 
-data, similarity = None, None
-
-try:
-    data, similarity = create_similarity()
-    print("✅ Successfully loaded similarity matrix")
-except Exception as e:
-    print(f"❌ Failed to load similarity matrix: {e}")
-
 
 def rcmd(m):
     m = m.lower()
@@ -247,19 +239,6 @@ def home():
 
 
 @app.route("/similarity",methods=["POST"])
-# def similarity():
-#     try:
-#         movie = request.form['name']
-#         print(f"🎬 Received movie title: {movie}")
-#         rc = rcmd(movie)
-#         print(f"✅ Recommended list: {rc}")
-#         if isinstance(rc, str):
-#             return rc
-#         else:
-#             return "---".join(rc)
-#     except Exception as e:
-#         print(f"❌ Error in /similarity: {e}")
-#         return "Internal Server Error", 500
 
 def similarity():
     movie = request.form['name']
