@@ -230,14 +230,38 @@ def home():
 
 @app.route("/similarity", methods=["POST"])
 def similarity():
-    movie = request.form["name"]
-    rc = rcmd(movie)
-    if isinstance(rc, str):
-        return rc
-    else:
-        return "---".join(rc)
+    try:
+        movie = request.form["name"]
+        print(f"🔍 /similarity triggered with movie: {movie}")
 
-@app.route("/recommend", methods=["POST"])
+        data, sim = create_similarity()
+
+        if movie.lower() not in data['movie_title'].str.lower().values:
+            return "Sorry! The movie you requested is not in our database."
+
+        i = data[data['movie_title'].str.lower() == movie.lower()].index[0]
+        lst = list(enumerate(sim[i]))
+        lst = sorted(lst, key=lambda x: x[1], reverse=True)
+        lst = lst[1:11]
+        recommended_titles = [data['movie_title'][x[0]] for x in lst]
+
+        return "---".join(recommended_titles)
+
+    except Exception as e:
+        import traceback
+        print("❌ Exception in /similarity:")
+        traceback.print_exc()
+        return f"error: {str(e)}"
+
+
+# def similarity():
+#     movie = request.form["name"]
+#     rc = rcmd(movie)
+#     if isinstance(rc, str):
+#         return rc
+#     else:
+#         return "---".join(rc)
+
 @app.route("/recommend", methods=["POST"])
 def recommend():
     try:
